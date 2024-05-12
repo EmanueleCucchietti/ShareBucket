@@ -12,7 +12,5 @@ public static class ServicesConfiguration
             options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("DataAccess")));
 
         services.AddTransient<ErrorMiddleware>();
-
-
     }
 }
