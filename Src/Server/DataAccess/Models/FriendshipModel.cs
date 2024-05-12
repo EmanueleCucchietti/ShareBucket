@@ -6,19 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models
+namespace DataAccess.Models;
+
+[Table("Friendship")]
+[Index(nameof(Id), IsUnique = true)]
+public class FriendshipModel
 {
-    [Table("Friendship")]
-    [Index(nameof(Id), IsUnique = true)]
-    public class FriendshipModel
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        // Relationships
-        public int UserId { get; set; }
-        public int FriendId { get; set; }
+    // Relationships
+    public int UserId { get; set; }
+    public int FriendId { get; set; }
 
-        public UserModel User { get; set; }
-        public UserModel Friend { get; set; }
-    }
+    public UserModel User { get; set; }
+    public UserModel Friend { get; set; }
 }

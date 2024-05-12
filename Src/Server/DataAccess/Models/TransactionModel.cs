@@ -8,30 +8,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models
+namespace DataAccess.Models;
+
+[Table("Transaction")]
+[Index(nameof(Id), IsUnique = true)]
+public class TransactionModel
 {
-    [Table("Transaction")]
-    [Index(nameof(Id), IsUnique = true)]
-    public class TransactionModel
-    {
-        public int Id { get; set; }
-        [Required]
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        [Required]
-        public decimal Price { get; set; }
+    public int Id { get; set; }
+    [Required]
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    [Required]
+    public decimal Price { get; set; }
 
 
-        // Relationships
-        [Required]
-        public int TierId { get; set; }
-        [Required]
-        public int UserId { get; set; }
-        [Required]
-        public int ModifierId { get; set; }
+    // Relationships
+    [Required]
+    public int TierId { get; set; }
+    [Required]
+    public int UserId { get; set; }
+    [Required]
+    public int ModifierId { get; set; }
 
-        public TierModel Tier { get; set; }
-        public UserModel User { get; set; }
-        public ModifierModel Modifier { get; set; }
-    }
+    public TierModel Tier { get; set; }
+    public UserModel User { get; set; }
+    public ModifierModel Modifier { get; set; }
 }

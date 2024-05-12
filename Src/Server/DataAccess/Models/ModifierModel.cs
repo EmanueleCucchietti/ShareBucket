@@ -7,17 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccess.Models
+namespace DataAccess.Models;
+
+[Table("Modifier")]
+[Index(nameof(Id), IsUnique = true)]
+public class ModifierModel
 {
-    [Table("Modifier")]
-    [Index(nameof(Id), IsUnique = true)]
-    public class ModifierModel
-    {
-        public int Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public decimal Percentage { get; set; }
-    }
+    public int Id { get; set; }
+    [Required]
+    public string Name { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public decimal Percentage { get; set; }
 }

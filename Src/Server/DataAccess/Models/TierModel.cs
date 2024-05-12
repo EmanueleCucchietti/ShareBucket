@@ -8,20 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace DataAccess.Models
+namespace DataAccess.Models;
+
+[Table("Tier")]
+[Index(nameof(Id), IsUnique = true)]
+public class TierModel
 {
-    [Table("Tier")]
-    [Index(nameof(Id), IsUnique = true)]
-    public class TierModel
-    {
-        public int Id { get; set; }
-        [MaxLength(50), Required]
-        public string Name { get; set; }
-        [Required]
-        public int MaxGB { get; set; }
-        [Required]
-        public int MaxAreaNumber { get; set; }
-        [Required]
-        public decimal Price { get; set; }
-    }
+    public int Id { get; set; }
+    [MaxLength(50), Required]
+    public string Name { get; set; }
+    [Required]
+    public int MaxGB { get; set; }
+    [Required]
+    public int MaxAreaNumber { get; set; }
+    [Required]
+    public decimal Price { get; set; }
 }
