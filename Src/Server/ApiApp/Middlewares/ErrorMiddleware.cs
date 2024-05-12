@@ -6,14 +6,17 @@ using System.Net;
 namespace ApiApp.Middlewares;
 
 //public class ErrorMiddleware(ILogger<ErrorMiddleware> _logger) : IMiddleware
-public class ErrorMiddleware() : IMiddleware
+public class ErrorMiddleware : IMiddleware
 {
-    //private readonly ILogger<ErrorMiddleware> _logger;
+    private readonly ILogger<ErrorMiddleware> _logger;
+    private readonly IWebHostEnvironment _env;
 
-    //public ErrorMiddleware(
-    //    ILogger<ErrorMiddleware> logger) =>
-    //    _logger = logger;
-
+    public ErrorMiddleware(ILogger<ErrorMiddleware> logger,
+                           IWebHostEnvironment env)
+    {
+        _logger = logger;
+        _env = env;
+    }
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try
@@ -23,10 +26,10 @@ public class ErrorMiddleware() : IMiddleware
         catch (Exception ex)
         {
 
-            //_logger.LogError(ex, "Error processing the request {protocol} {method} {path}",
-            //    context.Request.Protocol,
-            //    context.Request.Method,
-            //    context.Request.Path);
+            _logger.LogError(ex, "Error processing the request {protocol} {method} {path}",
+                context.Request.Protocol,
+                context.Request.Method,
+                context.Request.Path);
 
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
@@ -34,8 +37,8 @@ public class ErrorMiddleware() : IMiddleware
             {
                 Status = context.Response.StatusCode,
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
-                Title = "Internal Server Error",
-                Detail = $"Undefined Internal error. Logged at time: {DateTime.Now:yyyyMMdd HH:mm:ss}.",
+                Title = "Undefined Internal error. Logged at time: {DateTime.Now:yyyyMMdd HH:mm:ss}.",
+                Detail = ex.Message
             };
 
 
@@ -45,7 +48,11 @@ public class ErrorMiddleware() : IMiddleware
 
                 context.Response.StatusCode = statusCode;
                 problem.Status = statusCode;
-                problem.Detail += $" \r\n {ex.StackTrace}";
+            }
+            
+            if (_env.IsDevelopment())
+            {
+                problem.Detail += $"   ----   \r\n {ex.StackTrace}";
             }
 
             await context.Response.WriteAsJsonAsync(problem);
