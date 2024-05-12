@@ -1,4 +1,5 @@
-﻿using DataAccess.Context;
+﻿using ApiApp.Middlewares;
+using DataAccess.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiApp.Startup;
@@ -9,6 +10,9 @@ public static class ServicesConfiguration
     {
         services.AddDbContext<DataContext>(options =>
             options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("DataAccess")));
+
+        services.AddTransient<ErrorMiddleware>();
+
 
     }
 }
