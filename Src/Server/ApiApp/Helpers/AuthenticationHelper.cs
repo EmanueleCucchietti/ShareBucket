@@ -38,24 +38,6 @@ public class AuthenticationHelper : IAuthenticationHelper
         return  BCryptNet.HashPassword(password, salt);
     }
 
-    /*
-    public static bool VerifyBcryptHash(string password, string storedHash, string storedSalt)
-    {
-        if (string.IsNullOrEmpty(password)
-            || string.IsNullOrEmpty(storedHash)
-            || string.IsNullOrEmpty(storedSalt))
-        {
-            return false;
-        }
-
-        // Generate the hash using BCrypt and the stored salt
-        string generatedHash = BCryptNet.HashPassword(password, storedSalt);
-
-        // Compare the generated hash with the stored hash
-        return storedHash == generatedHash;
-    }
-    */
-
     public string GenerateAccessToken(UserModel user)
     {
         return GenerateJwtTokenWithClaims(
@@ -70,7 +52,7 @@ public class AuthenticationHelper : IAuthenticationHelper
     public string GenerateRefreshToken(UserModel user)
     {
         return GenerateJwtTokenWithClaims(
-            DateTime.Now.AddSeconds(15),
+            DateTime.Now.AddDays(7),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim("Refresh-Token", true.ToString())
         );

@@ -21,5 +21,8 @@ public class MemoryAreaModel
     public byte[] EncryptionKey { get; set; }
 
     // Relationships
-    public List<UserModel>? Users { get; set; }
+    public int UserOwnerId { get; set; }
+    public UserModel? UserOwner{ get; set; }
+    public IEnumerable<UserModel>? Users { get; set; }
+    public IEnumerable<MetadataModel>? Metadatas { get; set; }
 }

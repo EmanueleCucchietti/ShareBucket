@@ -24,6 +24,7 @@ namespace DataAccess.Models;
 
 
         // Relationships
-        public List<MemoryAreaModel>? MemoryAreasPartecipated { get; set; }
-        public List<FriendshipModel>? Friendships { get; set; }
+        public IEnumerable<MemoryAreaModel>? MemoryAreasOwned { get; set; }
+        public IEnumerable<MemoryAreaModel>? MemoryAreasPartecipated { get; set; }
+        public IEnumerable<FriendshipModel>? Friendships { get; set; }
     }

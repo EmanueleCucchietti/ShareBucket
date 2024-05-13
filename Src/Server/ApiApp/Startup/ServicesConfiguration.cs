@@ -3,7 +3,10 @@ using ApiApp.Helpers;
 using ApiApp.Middlewares;
 using ApiApp.Services;
 using DataAccess.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ApiApp.Startup;
 
@@ -25,11 +28,29 @@ public static class ServicesConfiguration
 
         // Middlewares
         services.AddTransient<ErrorMiddleware>();
+        services.AddTransient<AuthenticationMiddleware>();
 
         // Helpers
         services.AddTransient<IAuthenticationHelper, AuthenticationHelper>();
 
         // Services
         services.AddTransient<IUserService, UserService>();
+
+        // Authentication
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtConfiguration.Issuer,
+                    ValidAudience = jwtConfiguration.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                        jwtConfiguration.Key))
+                };
+            });
     }
 }

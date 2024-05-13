@@ -12,9 +12,11 @@ using ApiApp.Models.Dto.User;
 using Azure.Core;
 using ApiApp.Exceptions;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController(DataContext context,
@@ -24,48 +26,41 @@ namespace ApiApp.Controllers
         private readonly DataContext _context = context;
 
 
-        // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserModel>> GetUserModel(int id)
+        // GET: api/User/
+        [HttpGet]
+        public async Task<ActionResult<UserModel>> GetUserModel()
         {
-            var userModel = await _context.Users.FindAsync(id);
+            var userId = (int)HttpContext.Items["UserId"]!;
 
-            if (userModel == null)
-            {
-                return NotFound();
-            }
+            var user = await _context.Users.FindAsync(userId);
 
-            return userModel;
+            if (user is null)
+                throw new ClientResponseException("User not found with this userId", HttpStatusCode.BadRequest);
+
+            return user;
         }
 
         // PUT: api/User/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserModel(int id, UserModel userModel)
+        public async Task<IActionResult> PutUserModel(int id, UserUpdateDto userDto)
         {
-            if (id != userModel.Id)
-            {
-                return BadRequest();
-            }
+            var userModel = await _context.Users.FindAsync(id);
 
-            _context.Entry(userModel).State = EntityState.Modified;
+            if (userModel is null)
+                throw new ClientResponseException("User not found with this userId", HttpStatusCode.BadRequest);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserModelExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if(_context.Users.Any(user => user.Email == userDto.Email))
+                throw new ClientResponseException("Email already in use", HttpStatusCode.BadRequest);
 
-            return NoContent();
+            userModel.FirstName = userDto.FirstName;
+            userModel.LastName = userDto.LastName;
+            userModel.Email = userDto.Email;
+
+            _context.Entry(userDto).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         // POST: api/User
@@ -78,6 +73,7 @@ namespace ApiApp.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto userDto)
         {
@@ -93,6 +89,8 @@ namespace ApiApp.Controllers
 
             return Ok(new {accessToken, refreshToken});
         }
+
+        [AllowAnonymous]
         [HttpPost("Refresh")]
         public async Task<IActionResult> RefreshToken()
         {
@@ -116,23 +114,13 @@ namespace ApiApp.Controllers
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserModel(int id)
+        public async Task<IActionResult> DeleteUserModel()
         {
-            var userModel = await _context.Users.FindAsync(id);
-            if (userModel == null)
-            {
-                return NotFound();
-            }
+            var userId = (int)HttpContext.Items["UserId"]!;
 
-            _context.Users.Remove(userModel);
-            await _context.SaveChangesAsync();
+            await _userService.DeleteUser(userId);
 
-            return NoContent();
-        }
-
-        private bool UserModelExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
+            return Ok();
         }
     }
 }

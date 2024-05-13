@@ -21,4 +21,9 @@ public class MetadataModel
     [Required]
     public string FileExtension { get; set; }
     public DateTime DataCreation { get; set; } = DateTime.Now;
+
+
+    // Relationships
+    public int MemoryAreaId { get; set; }
+    public MemoryAreaModel? MemoryArea { get; set; }
 }
