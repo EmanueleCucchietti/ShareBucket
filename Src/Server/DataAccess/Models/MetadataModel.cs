@@ -15,7 +15,7 @@ public class MetadataModel
 {
     public int Id { get; set; }
     [Required]
-    public int Path { get; set; }
+    public string Path { get; set; }
     [Required]
     public string Filename { get; set; }
     [Required]

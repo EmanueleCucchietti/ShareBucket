@@ -4,6 +4,8 @@ using ApiApp.Middlewares;
 using ApiApp.Services;
 using DataAccess.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -32,9 +34,12 @@ public static class ServicesConfiguration
 
         // Helpers
         services.AddTransient<IAuthenticationHelper, AuthenticationHelper>();
+        services.AddTransient<IAesEncryptionService, AesEncryptionService>();
 
         // Services
         services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IFileService, FileService>();
+        
 
         // Authentication
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -52,5 +57,32 @@ public static class ServicesConfiguration
                         jwtConfiguration.Key))
                 };
             });
+
+        // Cors
+        services.AddCors(options =>
+        {
+            options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.WithOrigins(
+                    "http://localhost:3000",
+                    "http://localhost:8080",
+                    "https://localhost:8443")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
+
+        // Configuration for files transferring and encrypting
+        services.Configure<KestrelServerOptions>(options =>
+        {
+            options.AllowSynchronousIO = true;
+        });
+        services.Configure<IISServerOptions>(options =>
+        {
+            options.AllowSynchronousIO = true;
+        });
+
+
     }
 }

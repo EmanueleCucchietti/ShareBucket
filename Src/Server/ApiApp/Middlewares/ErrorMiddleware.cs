@@ -55,6 +55,8 @@ public class ErrorMiddleware : IMiddleware
                 problem.Detail += $"   ----   \r\n {ex.StackTrace}";
             }
 
+            
+
             await context.Response.WriteAsJsonAsync(problem);
         }
     }

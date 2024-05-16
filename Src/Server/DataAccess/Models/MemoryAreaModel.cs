@@ -15,6 +15,7 @@ namespace DataAccess.Models;
 public class MemoryAreaModel
 {
     public int Id { get; set; }
+    public string Name { get; set; }
     [Required]
     public int MaxGB { get; set; }
     public DateTime CreationDate { get; set; }

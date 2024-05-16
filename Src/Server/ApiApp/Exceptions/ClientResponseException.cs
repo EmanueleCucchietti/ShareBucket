@@ -20,5 +20,10 @@ public class ClientResponseException : AppException
         StatusCode = clientResponseCode;
     }
 
+    public ClientResponseException(string message, HttpStatusCode clientResponseCode, Exception innerException) : base(message, innerException)
+    {
+        StatusCode = clientResponseCode;
+    }
+
     public HttpStatusCode StatusCode { get; set; }
 }
